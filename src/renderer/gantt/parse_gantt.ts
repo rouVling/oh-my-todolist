@@ -24,6 +24,6 @@ export const parse_gantt = (tasks: TaskType[] | GroupedTaskType, timeFormat) => 
     }
   }
 
-  console.log(gantt)
+  // console.log(gantt)
   return gantt
 }

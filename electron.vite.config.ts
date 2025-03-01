@@ -7,6 +7,14 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   preload: {
+    build: {
+      lib: {
+        entry: [
+          resolve(__dirname, 'src/preload/index.ts'),
+          resolve(__dirname, 'src/preload/float.ts')
+        ],
+      }
+    },
     plugins: [externalizeDepsPlugin()]
   },
   renderer: {

@@ -11,6 +11,7 @@ import { parse_gantt } from './parse_gantt';
 import mermaid from 'mermaid'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
+import { ensureTaskType, taskTypeLoad } from '../utils/converts';
 
 
 dayjs.extend(duration)
@@ -23,33 +24,28 @@ function GanttGraph(): JSX.Element {
       dateFormat: "HH-mm"
     }
   })
-  const tasks = useRef<TaskType[] | GroupedTaskType>([
-    {
-      id: "1",
-      content: "TODO 主界面",
-      status: "on going",
-      ddl: dayjs("2025-02-27T20:00:00"),
-      duration: dayjs.duration(1, "hour"),
-      alerts: [],
-    },
-    {
-      id: "2",
-      content: "overwatch",
-      status: "on going",
-      ddl: dayjs("2025-02-27T20:00:00"),
-      // duration: undefined,
-      duration: dayjs.duration(1, "hour"),
-      alerts: [],
-    },
-  ])
+  const tasks = useRef<TaskType[] | GroupedTaskType>([])
+
+  useEffect(() => {
+    //@ts-ignore
+    window.api.getTasks().then((res) => {
+      // const loaded = res.map((task: string) => {
+      //   return taskTypeLoad(task)
+      // })
+      console.log(res)
+      tasks.current = ensureTaskType(res)
+      // renderMermaid(tasks)
+    })
+  }, [])
 
 
-  const renderMermaid = () => {
+  const renderMermaid = (content?: TaskType[]) => {
+    // console.log(tasks.current)
     mermaid.render("mermaid", `
 gantt
     ${config.current.mermaidRender!.title ?? ""}
     dateFormat ${config.current.mermaidRender!.dateFormat ?? "HH-mm"}
-    ${parse_gantt(tasks.current, config.current.mermaidRender!.dateFormat ?? "HH-mm")}
+    ${parse_gantt(content??tasks.current, config.current.mermaidRender!.dateFormat ?? "HH-mm")}
 `
     ).then(({ svg }) => {
       mermaidRef.current!.innerHTML = svg

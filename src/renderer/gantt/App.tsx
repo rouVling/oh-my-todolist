@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { ThemeProvider } from '@mui/material';
-import { darkTheme, primaryTheme } from './themes';
+import { darkTheme, primaryTheme } from '../utils/themes';
 
 import GanttGraph from './gantt';
 

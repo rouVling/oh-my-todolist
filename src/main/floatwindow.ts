@@ -1,9 +1,9 @@
-import { shell, BrowserWindow } from 'electron'
+import { shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
-export default function createFloatWindow(): void {
+export default function createFloatWindow(tasks: any): void {
   // Create the browser window.
   const floatWindow = new BrowserWindow({
     width: 400,
@@ -13,7 +13,7 @@ export default function createFloatWindow(): void {
     frame:false,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, '../preload/float.js'),
       sandbox: false
     },
     alwaysOnTop: true,
@@ -37,4 +37,8 @@ export default function createFloatWindow(): void {
     floatWindow.loadFile(join(__dirname, '../renderer/gantt.html'))
     // floatWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
+
+  ipcMain.handle('getTasks', async (event, args) => {
+    return tasks
+  })
 }

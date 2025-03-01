@@ -10,15 +10,16 @@ export interface AlertType {
 export type repeatType = undefined | "weekly"
 
 export interface TaskType {
-  id: string,
+  id: number,
   // abstract: string,
   content: string,
-  status: "on going" | "done" | "finished" | "postponed" | "canceled",
+  status: "on going" | "done" | "postponed" | "canceled",
   ddl: any,
   duration: Duration | undefined,
   alerts: AlertType[],
   predecessors?: string[] | undefined,
   repeat?: repeatType,
+  group: string | undefined,
 }
 
 export interface OMTFloatWindowConfig {
@@ -32,3 +33,31 @@ export interface OMTFloatWindowConfig {
 export interface GroupedTaskType {
   [key: string]: TaskType[]
 }
+
+export interface StorageSchema {
+  content: {
+    tasks: TaskType[],
+    groups: string[],
+    mermaidConfig: OMTFloatWindowConfig
+  }
+}
+
+export const defaultTask: TaskType = {
+  id: 0,
+  content: "",
+  status: "on going",
+  ddl: undefined,
+  duration: undefined,
+  alerts: [],
+  group: undefined,
+}
+
+export const defaultStorage: StorageSchema = {
+  content: {
+    tasks: [],
+    groups: [],
+    mermaidConfig: {}
+  },
+}
+
+export type sortType = "all" | "incomplete" | "today"

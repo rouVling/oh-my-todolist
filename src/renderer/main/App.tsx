@@ -1,107 +1,102 @@
-// import * as React from 'react';
-// import Box from '@mui/material/Box';
-// import Drawer from '@mui/material/Drawer';
-// import List from '@mui/material/List';
-// import Divider from '@mui/material/Divider';
-// import ListItem from '@mui/material/ListItem';
-// import ListItemButton from '@mui/material/ListItemButton';
-// import ListItemIcon from '@mui/material/ListItemIcon';
-// import ListItemText from '@mui/material/ListItemText';
-// import InboxIcon from '@mui/icons-material/MoveToInbox';
-// import MailIcon from '@mui/icons-material/Mail';
-
-// type Anchor = 'top' | 'left' | 'bottom' | 'right';
-
-// export default function MainApp() {
-//   const [state, setState] = React.useState({
-//     top: false,
-//     left: false,
-//     bottom: false,
-//     right: false,
-//   });
-
-//   const toggleDrawer =
-//     (anchor: Anchor, open: boolean) =>
-//       (event: React.KeyboardEvent | React.MouseEvent) => {
-//         if (
-//           event.type === 'keydown' &&
-//           ((event as React.KeyboardEvent).key === 'Tab' ||
-//             (event as React.KeyboardEvent).key === 'Shift')
-//         ) {
-//           return;
-//         }
-
-//         setState({ ...state, [anchor]: open });
-//       };
-
-//   const list = (anchor: Anchor) => (
-//     <Box
-//       sx={{ width: anchor === 'top' || anchor === 'bottom' ? 'auto' : 250 }}
-//       role="presentation"
-//       onClick={toggleDrawer(anchor, false)}
-//       onKeyDown={toggleDrawer(anchor, false)}
-//     >
-//       <List>
-//         {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-//           <ListItem key={text} disablePadding>
-//             <ListItemButton>
-//               <ListItemIcon>
-//                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-//               </ListItemIcon>
-//               <ListItemText primary={text} />
-//             </ListItemButton>
-//           </ListItem>
-//         ))}
-//       </List>
-//       <Divider />
-//       <List>
-//         {['All mail', 'Trash', 'Spam'].map((text, index) => (
-//           <ListItem key={text} disablePadding>
-//             <ListItemButton>
-//               <ListItemIcon>
-//                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-//               </ListItemIcon>
-//               <ListItemText primary={text} />
-//             </ListItemButton>
-//           </ListItem>
-//         ))}
-//       </List>
-//     </Box>
-//   );
-
-//   return (
-//     <div>
-//       ttttest
-//       {(['left', 'right', 'top', 'bottom'] as const).map((anchor) => (
-//         <>
-//           {/*<React.Fragment key={anchor}> */}
-//           <Button onClick={toggleDrawer(anchor, true)}>{anchor}</Button>
-//           <Drawer
-//             anchor={anchor}
-//             open={state[anchor]}
-//             onClose={toggleDrawer(anchor, false)}
-//           >
-//             {/* {list(anchor)} */}
-//             ok
-//           </Drawer>
-//         {/* </React.Fragment> */ }
-//         </>
-//       ))}
-//     </div>
-//   );
-// }
-
-import React from "react";
-import Drawer from '@mui/material/Drawer';
+import React, { useEffect, useState } from "react";
 import SettingDrawer from "./component/drawer";
-import Button from '@mui/material/Button';
+import Wrapper from "./component/wrapper";
+import Tasks from "./tasks";
+
+import { Theme, ThemeProvider } from '@mui/material';
+import { darkTheme, primaryTheme } from '../utils/themes';
+
+import { setThemeContext } from "./contexts";
+import { storageContext } from "./contexts";
+import { defaultStorage, sortType, StorageSchema } from "../utils/types";
+import { set } from "mermaid/dist/diagrams/state/id-cache.js";
+import TaskEditor from "./component/taskEditor";
+import { taskTypeDump, taskTypePartialDump, taskTypePartialLoad } from "../utils/converts";
+
+const drawerWidth = 180;
 
 export default function MainApp() {
 
   const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [theme, setTheme] = React.useState<Theme>(darkTheme);
+  const [group, setGroup] = React.useState<string | undefined>(undefined);
+  const [sort, setSort] = React.useState<sortType | undefined>(undefined);
+  const [storageValue, setStorage] = useState<StorageSchema | undefined>(undefined);
 
-  return <div>
-    <Button onClick={() => setDrawerOpen(!drawerOpen)}>Open Drawer</Button>
-    <SettingDrawer open={drawerOpen} onClose={() => {setDrawerOpen((open) => !open)}}/>
-  </div>
+
+  const handleClickGroup = (group_index: number) => {
+    // setGroup([group_index]);
+    setSort(undefined);
+  }
+  const handleClickTab = (tab: number) => {
+    setGroup(undefined);
+    switch (tab) {
+      case 0:
+        setSort("today");
+        break;
+      case 1:
+        setSort("all");
+        break;
+      case 2:
+        setSort("incomplete");
+        break;
+    }
+  }
+
+  useEffect(() => {
+    console.log("loaded")
+    //@ts-ignore
+    window.api.getStorage("content").then((res) => {
+      console.log("loadedRaw")
+      console.log(res)
+      if (res) {
+        setStorage({
+          ...res.content,
+          content: {
+            ...res.content,
+            tasks: res.content.tasks.map(taskTypePartialLoad)
+          }
+        });
+      }
+      else {
+        setStorage(defaultStorage);
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    console.log("storageValue changed")
+    console.log(storageValue)
+    if (storageValue) {
+      // let dumped = storageValue
+      //@ts-ignore
+      // dumped.content.tasks = dumped.content.tasks.map(taskTypePartialDump)
+      //@ts-ignore
+      window.api.setStorage("content", {
+        ...storageValue,
+        content: {
+          ...storageValue.content,
+          tasks: storageValue.content.tasks.map(taskTypePartialDump)
+        }
+      });
+    }
+  }, [storageValue])
+
+  return <storageContext.Provider value={{ storageValue: (storageValue ?? defaultStorage), setStorage }}>
+    <setThemeContext.Provider value={setTheme}>
+      <ThemeProvider theme={darkTheme}>
+        <Wrapper
+          // groups={groups}
+          // setGroups={setGroups}
+          clickGroup={handleClickGroup}
+          clickTab={handleClickTab}
+          toggleSettingDrawerOpen={() => setDrawerOpen((open) => !open)}
+        >
+          <TaskEditor group={group} sort={sort} />
+          <Tasks group={group} sort={sort} />
+          <SettingDrawer open={drawerOpen} onClose={() => { setDrawerOpen((open) => !open) }} />
+        </Wrapper>
+      </ThemeProvider>
+    </setThemeContext.Provider>
+  </storageContext.Provider>
 }

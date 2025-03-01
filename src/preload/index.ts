@@ -2,7 +2,17 @@ import { contextBridge } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
 // Custom APIs for renderer
-const api = {}
+const api = {
+  setStorage: (key: string, value: any) => {
+    electronAPI.ipcRenderer.invoke('set-store', key, value)
+  },
+  getStorage: (key: string) => {
+    return electronAPI.ipcRenderer.invoke('get-store', key)
+  },
+  createFloatWindow: (tasks: any) => {
+    electronAPI.ipcRenderer.invoke('create-float-window', tasks)
+  }
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

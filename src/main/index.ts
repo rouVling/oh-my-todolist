@@ -4,14 +4,29 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 // import { is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 
+import Store from 'electron-store'
+
+import dayjs from 'dayjs'
+import duration from 'dayjs/plugin/duration'
+
 import createFloatWindow from './floatwindow'
+
+dayjs.extend(duration)
+
+// console.log(dayjs.duration(1, "hour"))
+
+const store = new Store()
+
+// store.set("test", dayjs("2025-02-27T20:00:00").format("YYYY-MM-DD HH:mm:ss"))
+// store.set("test", dayjs.duration(1, "hour").asMilliseconds())
+// console.log(store.get("test"))
 
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     // width: 400,
     // height: 200,
-    width: 960,
+    width: 1024,
     height: 540,
     show: false,
     autoHideMenuBar: true,
@@ -21,7 +36,7 @@ function createWindow(): void {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     },
-    alwaysOnTop: true,
+    // alwaysOnTop: true,
   })
 
   mainWindow.on('ready-to-show', () => {
@@ -60,9 +75,16 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
+  // ipcMain.on('set-store', (_, key, value) => store.set(key, value))
+  ipcMain.handle('get-store', (_, key) => store.get(key))
+  ipcMain.handle('set-store', (_, key, value) => store.set(key, value))
 
-  // createWindow()
-  createFloatWindow()
+  ipcMain.handle('create-float-window', async (event, args) => {
+    createFloatWindow(args)
+  })
+
+  createWindow()
+  // createFloatWindow()
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
