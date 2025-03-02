@@ -63,11 +63,11 @@ export default function TaskEditor(props: TaskEditorProps) {
           />
           <FormControl sx={{ width: "15%" }}>
             <InputLabel>分组</InputLabel>
-            <Select variant="standard" value={task.group??UNCATALOGUED} onChange={(e) => {
+            <Select variant="standard" value={task.group ?? UNCATALOGUED} onChange={(e) => {
               setTask((tk) => {
                 return {
                   ...tk,
-                  group: e.target.value as string,
+                  group: e.target.value === UNCATALOGUED ? undefined : e.target.value,
                 }
               })
             }}>
