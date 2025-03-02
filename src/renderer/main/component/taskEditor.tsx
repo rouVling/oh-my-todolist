@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { defaultTask, sortType, TaskType } from "../../utils/types";
 import { storageContext } from "../contexts";
@@ -14,6 +14,7 @@ import { Button, Divider, FormControl, IconButton, Input, InputLabel, ListItemIc
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import DateInput from "./datePicker";
+import { group } from "console";
 
 dayjs.extend(duration);
 dayjs.extend(updateLocale)
@@ -30,6 +31,11 @@ export default function TaskEditor(props: TaskEditorProps) {
 
   const [task, setTask] = React.useState<TaskType>(defaultTask);
   const { storageValue, setStorage } = React.useContext(storageContext);
+  const [ defaultGroup, setDefaultGroup ] = React.useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    setDefaultGroup(props.group);
+  }, [props.group])
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
@@ -52,6 +58,7 @@ export default function TaskEditor(props: TaskEditorProps) {
                       ...sv.content,
                       tasks: [...sv.content.tasks, {
                         ...task,
+                        group: task.group ?? defaultGroup ?? undefined,
                         id: sv.content.tasks.length > 0 ? Math.max(...sv.content.tasks.map((item) => item.id)) + 1 : 0
                       }],
                     }
@@ -63,13 +70,14 @@ export default function TaskEditor(props: TaskEditorProps) {
           />
           <FormControl sx={{ width: "15%" }}>
             <InputLabel>分组</InputLabel>
-            <Select variant="standard" value={task.group ?? UNCATALOGUED} onChange={(e) => {
+            <Select variant="standard" value={task.group ?? defaultGroup ?? UNCATALOGUED} onChange={(e) => {
               setTask((tk) => {
                 return {
                   ...tk,
                   group: e.target.value === UNCATALOGUED ? undefined : e.target.value,
                 }
               })
+              setDefaultGroup(undefined);
             }}>
               {
                 storageValue.content.groups.map((item) => {
@@ -98,6 +106,7 @@ export default function TaskEditor(props: TaskEditorProps) {
                   ...sv.content,
                   tasks: [...sv.content.tasks, {
                     ...task,
+                    group: task.group ?? defaultGroup ?? undefined,
                     id: sv.content.tasks.length > 0 ? Math.max(...sv.content.tasks.map((item) => item.id)) + 1 : 0
                   }],
                 }
