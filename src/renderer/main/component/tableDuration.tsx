@@ -30,34 +30,60 @@ export default function TableDuration({ task }: Props) {
 
   return <div>
     {/* {task.duration ? task.duration.humanize() : undefined} */}
-    { task.duration ? (task.duration.asMinutes() % 30 === 0 ? task.duration.asMinutes() / 60 + " 小时" : task.duration.asMinutes() + " 分钟") : undefined }
+    {task.duration ? (task.duration.asMinutes() % 30 === 0 ? task.duration.asMinutes() / 60 + " 小时" : task.duration.asMinutes() + " 分钟") : undefined}
     <IconButton onClick={(e) => { setAnchorEl(e.currentTarget); setOpen(true) }
     }>
       <EditIcon fontSize="small" sx={{ color: "gray" }} />
     </IconButton>
     <Menu anchorEl={anchorEl} open={open} onClose={() => { setOpen(false) }}
-      // onScroll={(e) => {
-      //   const scaler = durationUnit === "minute" ? 5 : 1;
-      //   if (e.deltaY > 0) {
-      //     setDurationNumber(durationNumber - scaler);
-      //   }
-      //   else {
-      //     setDurationNumber(durationNumber + scaler);
-      //   }
-      // }}
+    // onScroll={(e) => {
+    //   const scaler = durationUnit === "minute" ? 5 : 1;
+    //   if (e.deltaY > 0) {
+    //     setDurationNumber(durationNumber - scaler);
+    //   }
+    //   else {
+    //     setDurationNumber(durationNumber + scaler);
+    //   }
+    // }}
     >
       <div style={{ display: "flex", flexDirection: "row", padding: "10px" }}>
-        <Input type="number" value={durationNumber} sx={{ width: "100px" }} onChange={(e) => { setDurationNumber(parseInt(e.target.value)) }}
+        <Input
+          type="number"
+          value={durationNumber}
+          sx={{ width: "100px" }}
+          onChange={(e) => { setDurationNumber(parseInt(e.target.value)) }}
         />
 
-        <Select value={durationUnit} onChange={(e) => { setDurationUnit(e.target.value) }} variant="standard" MenuProps={{ anchorOrigin: { vertical: "top", horizontal: "left" }, transformOrigin: { vertical: "top", horizontal: "left" } }}>
+        <Select
+          value={durationUnit}
+          onChange={(e) => { setDurationUnit(e.target.value) }}
+          variant="standard"
+          MenuProps={{ anchorOrigin: { vertical: "top", horizontal: "left" }, transformOrigin: { vertical: "top", horizontal: "left" } }}
+        >
           <MenuItem value="minute">分钟</MenuItem>
           <MenuItem value="hour">小时</MenuItem>
         </Select>
       </div>
       <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
-        <Button color="error" size="small" onClick={() => { setOpen(false); setStorage(produce((draft: any) => { let index = draft.content.tasks.findIndex((item: any) => item.id === task.id); draft.content.tasks[index].duration = undefined; })) }}>删除</Button>
-        <Button size="small" onClick={() => { setOpen(false); setStorage(produce((draft: any) => { let index = draft.content.tasks.findIndex((item: any) => item.id === task.id); draft.content.tasks[index].duration = dayjs.duration(durationNumber, durationUnit as plugin.DurationUnitType); })) }}>保存</Button>
+        <Button
+          color="error"
+          size="small"
+          onClick={() => {
+            setOpen(false);
+            setStorage(produce((draft: any) => { let index = draft.content.tasks.findIndex((item: any) => item.id === task.id); draft.content.tasks[index].duration = undefined; }))
+          }}
+        >
+          删除
+        </Button>
+        <Button
+          size="small"
+          onClick={() => {
+            setOpen(false);
+            setStorage(produce((draft: any) => { let index = draft.content.tasks.findIndex((item: any) => item.id === task.id); draft.content.tasks[index].duration = dayjs.duration(durationNumber, durationUnit as plugin.DurationUnitType); }))
+          }}
+        >
+          保存
+        </Button>
       </div>
     </Menu>
   </div >
