@@ -31,7 +31,7 @@ export default function TaskEditor(props: TaskEditorProps) {
 
   const [task, setTask] = React.useState<TaskType>(defaultTask);
   const { storageValue, setStorage } = React.useContext(storageContext);
-  const [ defaultGroup, setDefaultGroup ] = React.useState<string | undefined>(undefined);
+  const [defaultGroup, setDefaultGroup] = React.useState<string | undefined>(undefined);
 
   useEffect(() => {
     setDefaultGroup(props.group);
@@ -49,24 +49,24 @@ export default function TaskEditor(props: TaskEditorProps) {
               });
             }
           }
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                setStorage((sv) => {
-                  return {
-                    ...sv,
-                    content: {
-                      ...sv.content,
-                      tasks: [...sv.content.tasks, {
-                        ...task,
-                        group: task.group ?? defaultGroup ?? undefined,
-                        id: sv.content.tasks.length > 0 ? Math.max(...sv.content.tasks.map((item) => item.id)) + 1 : 0
-                      }],
-                    }
-                  }
-                })
-                setTask(defaultTask);
-              }
-            }}
+          // onKeyDown={(e) => {
+          //   // if (e.key === "Enter") {
+          //   setStorage((sv) => {
+          //     return {
+          //       ...sv,
+          //       content: {
+          //         ...sv.content,
+          //         tasks: [...sv.content.tasks, {
+          //           ...task,
+          //           group: task.group ?? defaultGroup ?? undefined,
+          //           id: sv.content.tasks.length > 0 ? Math.max(...sv.content.tasks.map((item) => item.id)) + 1 : 0
+          //         }],
+          //       }
+          //     }
+          //   })
+          //   setTask(defaultTask);
+          // }
+          // }
           />
           <FormControl sx={{ width: "15%" }}>
             {/* <InputLabel>分组</InputLabel> */}

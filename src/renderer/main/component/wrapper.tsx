@@ -150,21 +150,23 @@ export default function Wrapper(props: Props) {
           {/* <ListItemButton> */}
           <Input placeholder="添加分组" value={newGroupName} onChange={(e) => {
             setNewGroupName(e.target.value);
-          }} onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              if (newGroupName === "") {
-                return;
-              }
-              if (storageValue.content.groups.includes(newGroupName)) {
-                return;
-              }
-              setStorage(produce((draft: any) => {
-                draft.content.groups.push(newGroupName);
-                setNewGroupName("");
-              }
-              ));
-            }
-          }} />
+          }}
+            // onKeyDown={(e) => {
+            //   if (e.key === "Enter") {
+            //     if (newGroupName === "") {
+            //       return;
+            //     }
+            //     if (storageValue.content.groups.includes(newGroupName)) {
+            //       return;
+            //     }
+            //     setStorage(produce((draft: any) => {
+            //       draft.content.groups.push(newGroupName);
+            //       setNewGroupName("");
+            //     }
+            //     ));
+            //   }
+            // }}
+          />
           <IconButton onClick={() => {
             setStorage(produce((draft: any) => {
               if (newGroupName === "") {
