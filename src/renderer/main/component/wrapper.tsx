@@ -26,7 +26,7 @@ import { Input } from "@mui/material";
 import { storageContext } from "../contexts";
 import { produce } from "immer";
 
-const UNCATALOGUED = "未分类";
+import { UNCATALOGUED } from "../../utils/constants";
 
 const drawerWidth = 180;
 
@@ -131,6 +131,12 @@ export default function Wrapper(props: Props) {
               <IconButton onClick={() => {
                 setStorage(produce((draft: any) => {
                   draft.content.groups = draft.content.groups.filter((_, i) => i !== index);
+                  draft.content.tasks = draft.content.tasks.map((task: any) => {
+                    if (task.group === text) {
+                      task.group = UNCATALOGUED;
+                    }
+                    return task;
+                  });
                 }
                 ));
               }}>
