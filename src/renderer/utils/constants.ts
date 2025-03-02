@@ -1,1 +1,1 @@
-export const UNCATALOGUED = "未分类";
+export const UNCATALOGUED = "未分组";

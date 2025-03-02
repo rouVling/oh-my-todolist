@@ -148,7 +148,7 @@ export default function Wrapper(props: Props) {
         ))}
         <ListItem key="add" >
           {/* <ListItemButton> */}
-          <Input placeholder="添加分类" value={newGroupName} onChange={(e) => {
+          <Input placeholder="添加分组" value={newGroupName} onChange={(e) => {
             setNewGroupName(e.target.value);
           }} onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -210,7 +210,7 @@ export default function Wrapper(props: Props) {
               <MenuIcon />
             </IconButton>
             <Typography variant="h6" noWrap component="div">
-              {highlightGroupName === "upper" ? upperList[highlightGroupIndex].text : "分类：" + storageValue.content.groups[highlightGroupIndex]}
+              {highlightGroupName === "upper" ? upperList[highlightGroupIndex].text : "分组：" + storageValue.content.groups[highlightGroupIndex]}
             </Typography>
           </div>
           <IconButton

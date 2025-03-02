@@ -84,7 +84,7 @@ export default function TaskEditor(props: TaskEditorProps) {
                   return <MenuItem key={item} value={item}>{item}</MenuItem>
                 })
               }
-              <MenuItem key={UNCATALOGUED} value={UNCATALOGUED}>未分类</MenuItem>
+              <MenuItem key={UNCATALOGUED} value={UNCATALOGUED}>{UNCATALOGUED}</MenuItem>
             </Select>
           </FormControl>
         </div>
