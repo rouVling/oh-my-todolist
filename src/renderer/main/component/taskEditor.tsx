@@ -40,7 +40,7 @@ export default function TaskEditor(props: TaskEditorProps) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
       <Paper elevation={1} sx={{ display: "flex", flexDirection: "column", marginBottom: "10px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "10px" }}>
-        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: "10px" }}>
+        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: "10px", marginTop: "15px" }}>
           <Input placeholder="添加任务" sx={{ width: "75%" }} value={task.content} onChange={
             (e) => {
               setTask({
@@ -69,7 +69,7 @@ export default function TaskEditor(props: TaskEditorProps) {
             }}
           />
           <FormControl sx={{ width: "15%" }}>
-            <InputLabel>分组</InputLabel>
+            {/* <InputLabel>分组</InputLabel> */}
             <Select variant="standard" value={task.group ?? defaultGroup ?? UNCATALOGUED} onChange={(e) => {
               setTask((tk) => {
                 return {
