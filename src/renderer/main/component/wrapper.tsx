@@ -131,12 +131,13 @@ export default function Wrapper(props: Props) {
               <IconButton onClick={() => {
                 setStorage(produce((draft: any) => {
                   draft.content.groups = draft.content.groups.filter((_, i) => i !== index);
-                  draft.content.tasks = draft.content.tasks.map((task: any) => {
-                    if (task.group === text) {
-                      task.group = UNCATALOGUED;
-                    }
-                    return task;
-                  });
+                  draft.content.tasks = draft.content.tasks.filter((task: any) => task.group !== text);
+                  // .map((task: any) => {
+                  //   if (task.group === text) {
+                  //     task.group = UNCATALOGUED;
+                  //   }
+                  //   return task;
+                  // });
                 }
                 ));
               }}>
