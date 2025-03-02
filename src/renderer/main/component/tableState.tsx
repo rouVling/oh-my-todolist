@@ -1,6 +1,6 @@
 import React from "react";
 import { storageContext } from "../contexts";
-import { useTheme } from "@mui/material";
+import { ButtonGroup, useTheme } from "@mui/material";
 
 import { TaskType } from "../../utils/types";
 import { IconButton } from "@mui/material";
@@ -33,8 +33,8 @@ export default function TableState({ task }: Props) {
     }}>
       {task.status === "on going" ?
         // @ts-ignore
-        <HourglassFullIcon sx={{ color: theme.taskStatus.going }} /> :
-        <HourglassEmptyIcon />
+        <HourglassFullIcon sx={{ color: theme.taskStatus.going }} fontSize="small"/> :
+        <HourglassEmptyIcon fontSize="small"/>
       }
     </IconButton>
     <IconButton onClick={() => {
@@ -45,8 +45,8 @@ export default function TableState({ task }: Props) {
     }}>
       {task.status === "done" ?
         // @ts-ignore
-        <CheckCircleIcon sx={{ color: theme.taskStatus.done }} /> :
-        <CheckCircleOutlineIcon />
+        <CheckCircleIcon sx={{ color: theme.taskStatus.done }} fontSize="small"/> :
+        <CheckCircleOutlineIcon fontSize="small"/>
       }
     </IconButton>
     <IconButton onClick={() => {
@@ -57,8 +57,8 @@ export default function TableState({ task }: Props) {
     }}>
       {task.status === "postponed" ?
         // @ts-ignore
-        <WatchLaterIcon sx={{ color: theme.taskStatus.postponed }} /> :
-        <WatchLaterOutlinedIcon />
+        <WatchLaterIcon sx={{ color: theme.taskStatus.postponed }} fontSize="small"/> :
+        <WatchLaterOutlinedIcon fontSize="small"/>
       }
     </IconButton>
     <IconButton onClick={() => {
@@ -69,8 +69,8 @@ export default function TableState({ task }: Props) {
     }}>
       {task.status === "canceled" ?
         // @ts-ignore
-        <RemoveCircleIcon sx={{ color: theme.taskStatus.canceled }} /> :
-        <RemoveCircleOutlineOutlinedIcon />
+        <RemoveCircleIcon sx={{ color: theme.taskStatus.canceled }} fontSize="small"/> :
+        <RemoveCircleOutlineOutlinedIcon fontSize="small"/>
       }
     </IconButton>
   </div>
