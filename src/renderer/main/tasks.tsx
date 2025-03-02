@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo } from "react";
 
-import { useTheme } from "@emotion/react";
-
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -29,22 +27,12 @@ import { Done, DoneAll } from "@mui/icons-material";
 
 import dayjs from "dayjs";
 
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
-import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-// import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
-// import CancelIcon from '@mui/icons-material/Cancel';
-import HourglassFullIcon from '@mui/icons-material/HourglassFull';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import { storageContext } from "./contexts";
 import { Button } from "@mui/material";
 import { taskTypeDump } from "../utils/converts";
 
-import { produce } from "immer";
-
+import TableState from "./component/tableState";
+import TableGroup from "./component/tableGroup";
 
 interface TasksProps {
   group: string | undefined,
@@ -249,8 +237,6 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 export default function Tasks(props: TasksProps) {
 
-  const theme = useTheme();
-
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('content');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -318,7 +304,7 @@ export default function Tasks(props: TasksProps) {
     () =>
       [...storageValue.content.tasks]
         // .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .filter((row) => {
           if (props.group) {
             return row.group === props.group
@@ -393,60 +379,15 @@ export default function Tasks(props: TasksProps) {
                       {row.content}
                     </TableCell>
                     <TableCell align="left">
-                      {/* {row.status} */}
-                      <div style={{ display: "flex", flexDirection: "row" }}>
-                        <IconButton onClick={() => {
-                          setStorage(produce((draft: any) => {
-                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
-                            draft.content.tasks[index].status = "on going";
-                          }))
-                        }}>
-                          {row.status === "on going" ?
-                            // @ts-ignore
-                            <HourglassFullIcon sx={{ color: theme.taskStatus.going }} /> :
-                            <HourglassEmptyIcon />
-                          }
-                        </IconButton>
-                        <IconButton onClick={() => { 
-                          setStorage(produce((draft: any) => {
-                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
-                            draft.content.tasks[index].status = "done";
-                          }))
-                         }}>
-                          {row.status === "done" ?
-                            // @ts-ignore
-                            <CheckCircleIcon sx={{ color: theme.taskStatus.done }} /> :
-                            <CheckCircleOutlineIcon />
-                          }
-                        </IconButton>
-                        <IconButton onClick={() => {
-                          setStorage(produce((draft: any) => {
-                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
-                            draft.content.tasks[index].status = "postponed";
-                          }))
-                        }}>
-                          {row.status === "postponed" ?
-                            // @ts-ignore
-                            <WatchLaterIcon sx={{ color: theme.taskStatus.postponed }} /> :
-                            <WatchLaterOutlinedIcon />
-                          }
-                        </IconButton>
-                        <IconButton onClick={() => {
-                          setStorage(produce((draft: any) => {
-                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
-                            draft.content.tasks[index].status = "canceled";
-                          }))
-                        }}>
-                          {row.status === "canceled" ?
-                            // @ts-ignore
-                            <RemoveCircleIcon sx={{ color: theme.taskStatus.canceled }} /> :
-                            <RemoveCircleOutlineOutlinedIcon />
-                          }
-                        </IconButton>
-                      </div>
+                      <TableState task={row} />
                     </TableCell>
-                    <TableCell align="left">{dayjs(row.ddl)?.format("MM-DD HH:mm")}</TableCell>
-                    <TableCell align="left">{row.group}</TableCell>
+                    <TableCell align="left">{row.ddl ? dayjs(row.ddl).format("MM-DD HH:mm"): ""}</TableCell>
+                    <TableCell align="left">
+                      {row.duration ? row.duration.humanize() : ""}
+                    </TableCell>
+                    <TableCell align="left">
+                      <TableGroup task={row} />
+                    </TableCell>
                   </TableRow>
                 );
               })}
