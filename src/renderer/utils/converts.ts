@@ -50,7 +50,7 @@ export function taskTypePartialDump(task: TaskType) {
   return {
     ...task,
     ddl: task.ddl? ensureDayjsString(task.ddl): undefined,
-    duration: task.duration? ensureDuration(task.duration): undefined,
+    duration: task.duration? task.duration.toJSON(): undefined,
     alerts: task.alerts?.map((alert) => ({
       ...alert,
       time: ensureDayjsString(alert.time)
