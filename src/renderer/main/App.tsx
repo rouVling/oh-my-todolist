@@ -25,7 +25,7 @@ export default function MainApp() {
 
 
   const handleClickGroup = (group_index: number) => {
-    // setGroup([group_index]);
+    setGroup(storageValue?.content.groups[group_index]);
     setSort(undefined);
   }
   const handleClickTab = (tab: number) => {
@@ -51,7 +51,7 @@ export default function MainApp() {
       console.log(res)
       if (res) {
         setStorage({
-          ...res.content,
+          ...res,
           content: {
             ...res.content,
             tasks: res.content.tasks.map(taskTypePartialLoad)
@@ -65,8 +65,8 @@ export default function MainApp() {
   }, [])
 
   useEffect(() => {
-    console.log("storageValue changed")
-    console.log(storageValue)
+    // console.log("storageValue changed")
+    // console.log(storageValue)
     if (storageValue) {
       // let dumped = storageValue
       //@ts-ignore
