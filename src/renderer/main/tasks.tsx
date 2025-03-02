@@ -33,6 +33,9 @@ import { taskTypeDump } from "../utils/converts";
 
 import TableState from "./component/tableState";
 import TableGroup from "./component/tableGroup";
+import TableDuration from "./component/tableDuration";
+
+import { produce } from "immer";
 
 interface TasksProps {
   group: string | undefined,
@@ -120,7 +123,7 @@ const headCells: readonly HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  numSelected: number;
+  selected: number[];
   onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
@@ -129,7 +132,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+  const { onSelectAllClick, order, orderBy, selected, rowCount, onRequestSort } =
     props;
   const createSortHandler =
     (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
@@ -142,8 +145,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
         <TableCell padding="checkbox">
           <Checkbox
             color="primary"
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
+            indeterminate={selected.length > 0 && selected.length < rowCount}
+            checked={rowCount > 0 && selected.length === rowCount}
             onChange={onSelectAllClick}
             inputProps={{
               'aria-label': 'select all desserts',
@@ -176,10 +179,12 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 interface EnhancedTableToolbarProps {
-  numSelected: number;
+  selected: number[];
+  setSelect: any;
 }
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
+  const { storageValue, setStorage } = React.useContext(storageContext);
+  const { selected } = props;
   return (
     <Toolbar
       sx={[
@@ -187,20 +192,20 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           pl: { sm: 2 },
           pr: { xs: 1, sm: 1 },
         },
-        numSelected > 0 && {
+        selected.length > 0 && {
           bgcolor: (theme) =>
             alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
         },
       ]}
     >
-      {numSelected > 0 ? (
+      {selected.length > 0 ? (
         <Typography
           sx={{ flex: '1 1 100%' }}
           color="inherit"
           variant="subtitle1"
           component="div"
         >
-          {numSelected} 选中
+          {selected.length} 选中
         </Typography>
       ) : (
         <Typography
@@ -212,10 +217,18 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           项目
         </Typography>
       )}
-      {numSelected > 0 ? (
+      {selected.length > 0 ? (
         <div style={{ display: "flex", flexDirection: "row" }}>
           <Tooltip title="Done">
-            <IconButton>
+            <IconButton onClick={() => {
+              setStorage(produce((draft: any) => {
+                selected.forEach((id) => {
+                  let index = draft.content.tasks.findIndex((item: any) => item.id === id);
+                  draft.content.tasks[index].status = "done";
+                })
+              }))
+              props.setSelect([]);
+            }}>
               <DoneAllIcon />
             </IconButton>
           </Tooltip>
@@ -239,7 +252,7 @@ export default function Tasks(props: TasksProps) {
 
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('content');
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
+  const [selected, setSelected] = React.useState<number[]>([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(true);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -266,7 +279,7 @@ export default function Tasks(props: TasksProps) {
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
+    let newSelected: number[] = [];
 
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
@@ -323,14 +336,14 @@ export default function Tasks(props: TasksProps) {
               return row.status === "on going";
           }
         })
-      ,
+    ,
     [order, orderBy, page, rowsPerPage, storageValue, props.group, props.sort],
   );
 
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar selected={selected} setSelect={setSelected}/>
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -338,7 +351,7 @@ export default function Tasks(props: TasksProps) {
             size={dense ? 'small' : 'medium'}
           >
             <EnhancedTableHead
-              numSelected={selected.length}
+              selected={selected}
               order={order}
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
@@ -381,9 +394,12 @@ export default function Tasks(props: TasksProps) {
                     <TableCell align="left">
                       <TableState task={row} />
                     </TableCell>
-                    <TableCell align="left">{row.ddl ? dayjs(row.ddl).format("MM-DD HH:mm"): ""}</TableCell>
                     <TableCell align="left">
-                      {row.duration ? row.duration.humanize() : ""}
+                      {row.ddl ? dayjs(row.ddl).format("MM-DD HH:mm") : ""}
+                      {/* {row.ddl ? dayjs(row.ddl).format("MM-DD") : ""} */}
+                    </TableCell>
+                    <TableCell align="left">
+                      <TableDuration task={row} />
                     </TableCell>
                     <TableCell align="left">
                       <TableGroup task={row} />
