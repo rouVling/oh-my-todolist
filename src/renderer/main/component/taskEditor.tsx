@@ -98,7 +98,7 @@ export default function TaskEditor(props: TaskEditorProps) {
                   ...sv.content,
                   tasks: [...sv.content.tasks, {
                     ...task,
-                    id: sv.content.tasks > 0 ? Math.max(...sv.content.tasks.map((item) => item.id)) + 1 : 0
+                    id: sv.content.tasks.length > 0 ? Math.max(...sv.content.tasks.map((item) => item.id)) + 1 : 0
                   }],
                 }
               }
