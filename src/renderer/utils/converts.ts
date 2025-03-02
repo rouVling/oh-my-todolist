@@ -59,7 +59,12 @@ export function taskTypePartialDump(task: TaskType) {
 }
 
 export function ensureDayjs(date: any): dayjs.Dayjs {
-  return dayjs(date)
+  // return dayjs(date)
+  console.log(date)
+  if (typeof date === "string") {
+    return dayjs(date)
+  }
+  return date
 }
 
 export function ensureDayjsString(date: any): string {
