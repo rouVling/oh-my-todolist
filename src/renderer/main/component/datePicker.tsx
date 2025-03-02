@@ -107,7 +107,7 @@ export default function DateInput({ date, setDate }: Props) {
             <MultiSectionDigitalClock value={selectedTime ? dayjs(selectedTime) : dayjs()} onChange={(val) => { setSelectedTime(val.toDate()); }} />
             <Button onClick={() => { setDatePickerLevel(2); }}>返回</Button>
             <Button onClick={() => { setDatePickerLevel(0);
-              setDate(dayjs(selectedDate).set("hour", dayjs(selectedTime).hour()).set("minute", dayjs(selectedTime).minute()).toDate());
+              setDate((selectedDate? dayjs(selectedDate): dayjs()).set("hour", dayjs(selectedTime).hour()).set("minute", dayjs(selectedTime).minute()).toDate());
              }}>确认</Button>
           </div>
         </>
