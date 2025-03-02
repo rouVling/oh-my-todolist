@@ -20,7 +20,7 @@ dayjs.extend(duration);
 dayjs.extend(updateLocale)
 dayjs.updateLocale("zh-cn", { weekStart: 1, });
 
-const UNCATALOGUED = "未分类";
+import { UNCATALOGUED } from "../../utils/constants";
 
 interface TaskEditorProps {
   group: string | undefined,
