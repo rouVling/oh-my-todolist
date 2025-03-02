@@ -1,5 +1,4 @@
-import { group } from "console";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import { useTheme } from "@emotion/react";
 
@@ -43,6 +42,8 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import { storageContext } from "./contexts";
 import { Button } from "@mui/material";
 import { taskTypeDump } from "../utils/converts";
+
+import { produce } from "immer";
 
 
 interface TasksProps {
@@ -317,8 +318,27 @@ export default function Tasks(props: TasksProps) {
     () =>
       [...storageValue.content.tasks]
         // .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, storageValue],
+        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+        .filter((row) => {
+          if (props.group) {
+            return row.group === props.group
+          }
+          return true
+        })
+        .filter((row) => {
+          switch (props.sort) {
+            case undefined:
+              return true;
+            case "today":
+              return dayjs(row.ddl).isSame(dayjs(), "day");
+            case "all":
+              return true;
+            case "incomplete":
+              return row.status === "on going";
+          }
+        })
+      ,
+    [order, orderBy, page, rowsPerPage, storageValue, props.group, props.sort],
   );
 
   return (
@@ -375,28 +395,48 @@ export default function Tasks(props: TasksProps) {
                     <TableCell align="left">
                       {/* {row.status} */}
                       <div style={{ display: "flex", flexDirection: "row" }}>
-                        <IconButton onClick={() => { }}>
+                        <IconButton onClick={() => {
+                          setStorage(produce((draft: any) => {
+                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
+                            draft.content.tasks[index].status = "on going";
+                          }))
+                        }}>
                           {row.status === "on going" ?
                             // @ts-ignore
                             <HourglassFullIcon sx={{ color: theme.taskStatus.going }} /> :
                             <HourglassEmptyIcon />
                           }
                         </IconButton>
-                        <IconButton onClick={() => { }}>
+                        <IconButton onClick={() => { 
+                          setStorage(produce((draft: any) => {
+                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
+                            draft.content.tasks[index].status = "done";
+                          }))
+                         }}>
                           {row.status === "done" ?
                             // @ts-ignore
                             <CheckCircleIcon sx={{ color: theme.taskStatus.done }} /> :
                             <CheckCircleOutlineIcon />
                           }
                         </IconButton>
-                        <IconButton onClick={() => { }}>
+                        <IconButton onClick={() => {
+                          setStorage(produce((draft: any) => {
+                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
+                            draft.content.tasks[index].status = "postponed";
+                          }))
+                        }}>
                           {row.status === "postponed" ?
                             // @ts-ignore
                             <WatchLaterIcon sx={{ color: theme.taskStatus.postponed }} /> :
                             <WatchLaterOutlinedIcon />
                           }
                         </IconButton>
-                        <IconButton onClick={() => { }}>
+                        <IconButton onClick={() => {
+                          setStorage(produce((draft: any) => {
+                            let index = draft.content.tasks.findIndex((item: any) => item.id === row.id);
+                            draft.content.tasks[index].status = "canceled";
+                          }))
+                        }}>
                           {row.status === "canceled" ?
                             // @ts-ignore
                             <RemoveCircleIcon sx={{ color: theme.taskStatus.canceled }} /> :
