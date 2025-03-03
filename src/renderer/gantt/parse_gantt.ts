@@ -20,7 +20,7 @@ export const parse_gantt = (tasks: TaskType[] | GroupedTaskType, timeFormat) => 
   for (const key in (tasks as GroupedTaskType)) {
     gantt += `section ${key}\n`
     for (const task of tasks[key]) {
-      gantt += `${task.content} : ${task.ddl.format(timeFormat)}, ${task.ddl.add(task.duration).format(timeFormat)}\n`
+      gantt += `${task.content} : ${task.start.format(timeFormat)}, ${task.start.add(task.duration).format(timeFormat)}\n`
     }
   }
 

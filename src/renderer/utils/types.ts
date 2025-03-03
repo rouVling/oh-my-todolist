@@ -15,6 +15,7 @@ export interface TaskType {
   content: string,
   status: "on going" | "done" | "postponed" | "canceled",
   ddl: any,
+  start?: any,
   duration: Duration | undefined,
   alerts: AlertType[],
   predecessors?: string[] | undefined,

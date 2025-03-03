@@ -17,22 +17,22 @@ export function taskTypeDump(task: TaskType): string {
   // })
 }
 
-export function taskTypeLoad(task: string): TaskType {
-  const taskObj = JSON.parse(task)
-  return {
-    ...taskObj,
-    ddl: taskObj.ddl ? dayjs(taskObj.ddl) : undefined,
-    duration: taskObj.duration ? dayjs.duration(taskObj.duration) : undefined,
-    alerts: taskObj.alerts.map((alert: any) => ({
-      ...alert,
-      time: dayjs(alert.time)
-    }))
-  }
-}
+// export function taskTypeLoad(task: string): TaskType {
+//   const taskObj = JSON.parse(task)
+//   return {
+//     ...taskObj,
+//     ddl: taskObj.ddl ? dayjs(taskObj.ddl) : undefined,
+//     duration: taskObj.duration ? dayjs.duration(taskObj.duration) : undefined,
+//     alerts: taskObj.alerts.map((alert: any) => ({
+//       ...alert,
+//       time: dayjs(alert.time)
+//     }))
+//   }
+// }
 
-export function dayjsDump(date: dayjs.Dayjs): string {
-  return date.toJSON()
-}
+// export function dayjsDump(date: dayjs.Dayjs): string {
+//   return date.toJSON()
+// }
 
 export function dayjsLoad(date: string): dayjs.Dayjs {
   return dayjs(date)
@@ -50,6 +50,7 @@ export function taskTypePartialDump(task: TaskType) {
   return {
     ...task,
     ddl: task.ddl? ensureDayjsString(task.ddl): undefined,
+    start: task.start? ensureDayjsString(task.start): undefined,
     duration: task.duration? task.duration.toJSON(): undefined,
     alerts: task.alerts?.map((alert) => ({
       ...alert,
@@ -81,6 +82,7 @@ export function taskTypePartialLoad(task: any): TaskType {
     ...task,
     // ddl: task.ddl ? dayjs(task.ddl) : undefined,
     ddl: task.ddl ? ensureDayjs(task.ddl) : undefined,
+    start: task.start? ensureDayjs(task.start): undefined,
     duration: task.duration ? dayjs.duration(task.duration) : undefined,
     alerts: task.alerts.map((alert: any) => ({
       ...alert,

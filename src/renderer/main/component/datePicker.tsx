@@ -7,11 +7,11 @@ import { MultiSectionDigitalClock } from '@mui/x-date-pickers/MultiSectionDigita
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
+import EditCalendarIcon from '@mui/icons-material/EditCalendar';
 
 import dayjs from "dayjs";
 import updateLocale from 'dayjs/plugin/updateLocale';
 import duration from "dayjs/plugin/duration";
-import { setPriority } from "os";
 import "dayjs/locale/zh-cn";
 
 dayjs.extend(duration);
@@ -77,9 +77,12 @@ export default function DateInput({ date, setDate }: Props) {
             <ListItemText primary="这周" secondary={dayjs().add(7 - ((dayjs().day() + 6) % 7 + 1), "day").format("MM-DD") + " 周" + "日一二三四五六".charAt(dayjs().add(7 - ((dayjs().day() + 6) % 7 + 1), "day").day())} />
           </MenuItem>
           <MenuItem onClick={() => { setDatePickerLevel(2); }}>
-            <ListItemText primary="选择" />
+            <ListItemText primary="选择日期" />
+            {/* <ListItemIcon>
+              <EditCalendarIcon fontSize="small" />
+            </ListItemIcon> */}
             <ListItemIcon>
-              <NavigateNextRoundedIcon fontSize="small" />
+              <NavigateNextRoundedIcon fontSize="medium" />
             </ListItemIcon>
           </MenuItem>
           <MenuItem onClick={() => {
@@ -95,8 +98,8 @@ export default function DateInput({ date, setDate }: Props) {
         <>
           <DateCalendar defaultValue={dayjs().endOf("hour").endOf("minute")} onChange={(val) => setSelectedDate(val)} />
           <div style={{ display: "flex", flexDirection: "row", justifyContent: "flex-end" }}>
-            <Button onClick={() => { setDatePickerLevel(3); }}>进一步</Button>
-            <Button onClick={() => { setDatePickerLevel(0); setDate(selectedDate) }}>确定</Button>
+            <Button onClick={() => { setDatePickerLevel(3); setDate(selectedDate ?? dayjs()) }}>进一步</Button>
+            <Button onClick={() => { setDatePickerLevel(0); setDate(selectedDate ?? dayjs()) }}>确定</Button>
           </div>
         </>
       }
@@ -107,7 +110,7 @@ export default function DateInput({ date, setDate }: Props) {
             <MultiSectionDigitalClock value={selectedTime ? dayjs(selectedTime) : dayjs()} onChange={(val) => { setSelectedTime(val.toDate()); }} />
             <Button onClick={() => { setDatePickerLevel(2); }}>返回</Button>
             <Button onClick={() => { setDatePickerLevel(0);
-              setDate((selectedDate? dayjs(selectedDate): dayjs()).set("hour", dayjs(selectedTime).hour()).set("minute", dayjs(selectedTime).minute()).toDate());
+              setDate((selectedDate? dayjs(selectedDate): dayjs()).set("hour", dayjs(selectedTime).hour()).set("minute", dayjs(selectedTime).minute()));
              }}>确认</Button>
           </div>
         </>

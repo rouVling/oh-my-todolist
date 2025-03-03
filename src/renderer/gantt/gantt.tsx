@@ -11,7 +11,7 @@ import { parse_gantt } from './parse_gantt';
 import mermaid from 'mermaid'
 import dayjs from 'dayjs'
 import duration from 'dayjs/plugin/duration'
-import { ensureTaskType, taskTypeLoad } from '../utils/converts';
+import { ensureTaskType } from '../utils/converts';
 
 
 dayjs.extend(duration)

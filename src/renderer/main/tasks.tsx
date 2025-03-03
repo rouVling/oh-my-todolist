@@ -29,13 +29,15 @@ import dayjs from "dayjs";
 
 import { storageContext } from "./contexts";
 import { Button } from "@mui/material";
-import { taskTypeDump } from "../utils/converts";
+import { taskTypePartialDump } from "../utils/converts";
 
 import TableState from "./component/tableState";
 import TableGroup from "./component/tableGroup";
 import TableDuration from "./component/tableDuration";
 
 import { produce } from "immer";
+import { UNCATALOGUED } from "../utils/constants";
+import TableDate from "./component/tableDate";
 
 interface TasksProps {
   group: string | undefined,
@@ -45,6 +47,7 @@ interface TasksProps {
 interface Data {
   id: number;
   content: string;
+  start: string;
   duration: string | undefined;
   status: "on going" | "done" | "postponed" | "canceled";
   ddl: string;
@@ -107,6 +110,12 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: '截止日期',
+  },
+  {
+    id: 'start',
+    numeric: false,
+    disablePadding: false,
+    label: '开始时间',
   },
   {
     id: 'duration',
@@ -233,7 +242,14 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
             </IconButton>
           </Tooltip>
           <Tooltip title="OpenInNew">
-            <IconButton>
+            <IconButton onClick={() => {
+              //@ts-ignore
+              window.api.createFloatWindow(selected.map((id: number) => {
+                let index = storageValue.content.tasks.findIndex((item: any) => item.id === id);
+                return taskTypePartialDump(storageValue.content.tasks[index]);
+              }))
+              props.setSelect([]);
+            }}>
               <OpenInNewIcon />
             </IconButton>
           </Tooltip>
@@ -320,7 +336,8 @@ export default function Tasks(props: TasksProps) {
         // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
         .filter((row) => {
           if (props.group) {
-            return row.group === props.group
+            if (props.group === UNCATALOGUED) return row.group === undefined
+            else return row.group === props.group
           }
           return true
         })
@@ -395,8 +412,10 @@ export default function Tasks(props: TasksProps) {
                       <TableState task={row} />
                     </TableCell>
                     <TableCell align="left">
-                      {row.ddl ? dayjs(row.ddl).format("MM-DD HH:mm") : ""}
-                      {/* {row.ddl ? dayjs(row.ddl).format("MM-DD") : ""} */}
+                      <TableDate task={row} target="ddl" />
+                    </TableCell>
+                    <TableCell align="left">
+                      <TableDate task={row} target="start" />
                     </TableCell>
                     <TableCell align="left">
                       <TableDuration task={row} />
@@ -433,8 +452,6 @@ export default function Tasks(props: TasksProps) {
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       /> */}
-
-
     </Box>
   );
 }

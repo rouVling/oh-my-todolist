@@ -38,7 +38,7 @@ export default function TaskEditor(props: TaskEditorProps) {
   }, [props.group])
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
+    // <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
       <Paper elevation={1} sx={{ display: "flex", flexDirection: "column", marginBottom: "10px", paddingLeft: "20px", paddingRight: "20px", paddingBottom: "10px" }}>
         <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", margin: "10px", marginTop: "15px" }}>
           <Input placeholder="添加任务" sx={{ width: "75%" }} value={task.content} onChange={
@@ -99,6 +99,7 @@ export default function TaskEditor(props: TaskEditorProps) {
             }
             )} />
           <Button variant="outlined" size="small" disabled={(task?.content === undefined) || (task?.content === "")} onClick={() => {
+            console.log("new task in creaing: ", task)
             setStorage((sv) => {
               return {
                 ...sv,
@@ -116,6 +117,6 @@ export default function TaskEditor(props: TaskEditorProps) {
           }}>创建</Button>
         </div>
       </Paper>
-    </LocalizationProvider>
+    // </LocalizationProvider>
   );
 }

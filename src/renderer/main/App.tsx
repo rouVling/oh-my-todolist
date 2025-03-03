@@ -12,6 +12,19 @@ import { defaultStorage, sortType, StorageSchema } from "../utils/types";
 import { set } from "mermaid/dist/diagrams/state/id-cache.js";
 import TaskEditor from "./component/taskEditor";
 import { taskTypeDump, taskTypePartialDump, taskTypePartialLoad } from "../utils/converts";
+import { UNCATALOGUED } from "../utils/constants";
+
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+
+import dayjs, { locale } from "dayjs";
+import "dayjs/locale/zh-cn";
+import updateLocale from 'dayjs/plugin/updateLocale';
+import duration from "dayjs/plugin/duration";
+
+dayjs.extend(duration);
+dayjs.extend(updateLocale)
+dayjs.updateLocale("zh-cn", { weekStart: 1, });
 
 const drawerWidth = 180;
 
@@ -25,7 +38,7 @@ export default function MainApp() {
 
 
   const handleClickGroup = (group_index: number) => {
-    setGroup(storageValue?.content.groups[group_index]);
+    setGroup((storageValue?.content.groups[group_index]) ?? UNCATALOGUED);
     setSort(undefined);
   }
   const handleClickTab = (tab: number) => {
@@ -85,17 +98,19 @@ export default function MainApp() {
   return <storageContext.Provider value={{ storageValue: (storageValue ?? defaultStorage), setStorage }}>
     <setThemeContext.Provider value={setTheme}>
       <ThemeProvider theme={darkTheme}>
-        <Wrapper
-          // groups={groups}
-          // setGroups={setGroups}
-          clickGroup={handleClickGroup}
-          clickTab={handleClickTab}
-          toggleSettingDrawerOpen={() => setDrawerOpen((open) => !open)}
-        >
-          <TaskEditor group={group} sort={sort} />
-          <Tasks group={group} sort={sort} />
-          <SettingDrawer open={drawerOpen} onClose={() => { setDrawerOpen((open) => !open) }} />
-        </Wrapper>
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
+          <Wrapper
+            // groups={groups}
+            // setGroups={setGroups}
+            clickGroup={handleClickGroup}
+            clickTab={handleClickTab}
+            toggleSettingDrawerOpen={() => setDrawerOpen((open) => !open)}
+          >
+            <TaskEditor group={group} sort={sort} />
+            <Tasks group={group} sort={sort} />
+            <SettingDrawer open={drawerOpen} onClose={() => { setDrawerOpen((open) => !open) }} />
+          </Wrapper>
+        </LocalizationProvider>
       </ThemeProvider>
     </setThemeContext.Provider>
   </storageContext.Provider>
