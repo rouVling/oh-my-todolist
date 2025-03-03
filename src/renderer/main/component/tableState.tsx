@@ -12,6 +12,9 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import EventBusyIcon from '@mui/icons-material/EventBusy';
+import EventBusyOutlinedIcon from '@mui/icons-material/EventBusyOutlined';
+
 import { produce } from "immer";
 
 interface Props {
@@ -69,8 +72,8 @@ export default function TableState({ task }: Props) {
     }}>
       {task.status === "canceled" ?
         // @ts-ignore
-        <RemoveCircleIcon sx={{ color: theme.taskStatus.canceled }} fontSize="small"/> :
-        <RemoveCircleOutlineOutlinedIcon fontSize="small"/>
+        <EventBusyIcon sx={{ color: theme.taskStatus.canceled }} fontSize="small"/> :
+        <EventBusyOutlinedIcon fontSize="small"/>
       }
     </IconButton>
   </div>
