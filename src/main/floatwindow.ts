@@ -38,7 +38,7 @@ export default function createFloatWindow(tasks: any): void {
     // floatWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
-  ipcMain.handle('getTasks', async (event, args) => {
+  ipcMain.handle('getTasks', async () => {
     return tasks
   })
 }

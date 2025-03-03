@@ -79,7 +79,7 @@ app.whenReady().then(() => {
   ipcMain.handle('get-store', (_, key) => store.get(key))
   ipcMain.handle('set-store', (_, key, value) => store.set(key, value))
 
-  ipcMain.handle('create-float-window', async (event, args) => {
+  ipcMain.handle('create-float-window', async (_, args) => {
     createFloatWindow(args)
   })
 
