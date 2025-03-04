@@ -69,7 +69,7 @@ export default function TableDate({ task, target }: Props) {
           :
           <Input sx={{ width: "60px", textAlign: "end", paddingLeft: "5px" }} type="number" placeholder="mm"
             value={task[target]?.minute()} onChange={(e) => {
-              if (parseInt(e.target.value) > 24 || parseInt(e.target.value) < 0) {
+              if (parseInt(e.target.value) > 60 || parseInt(e.target.value) < 0) {
                 return
               }
               setStorage(
