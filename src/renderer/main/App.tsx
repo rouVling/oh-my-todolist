@@ -22,6 +22,8 @@ import "dayjs/locale/zh-cn";
 import updateLocale from 'dayjs/plugin/updateLocale';
 import duration from "dayjs/plugin/duration";
 
+import { produce } from "immer";
+
 dayjs.extend(duration);
 dayjs.extend(updateLocale)
 dayjs.updateLocale("zh-cn", { weekStart: 1, });
@@ -48,9 +50,12 @@ export default function MainApp() {
         setSort("today");
         break;
       case 1:
-        setSort("all");
+        setSort("recent");
         break;
       case 2:
+        setSort("all");
+        break;
+      case 3:
         setSort("incomplete");
         break;
     }
@@ -73,6 +78,13 @@ export default function MainApp() {
       }
       else {
         setStorage(defaultStorage);
+      }
+      if (res.settings === undefined) {
+        // @ts-ignore
+        setStorage(produce((draft: StorageSchema) => {
+          draft.content.settings = defaultStorage.content.settings;
+        }
+        ));
       }
     })
   }, [])
@@ -97,7 +109,7 @@ export default function MainApp() {
 
   return <storageContext.Provider value={{ storageValue: (storageValue ?? defaultStorage), setStorage }}>
     <setThemeContext.Provider value={setTheme}>
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="zh-cn">
           <Wrapper
             // groups={groups}

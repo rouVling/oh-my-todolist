@@ -69,12 +69,21 @@ gantt
     console.log("mermaid init")
   }, [config])
 
+  // 分钟，秒
+  const [currentTime, setCurrentTime] = React.useState(dayjs().format("HH-mm"))
+
   useInterval(() => {
     renderMermaid()
   }, 2000)
 
+  useInterval(() => {
+    setCurrentTime(dayjs().format("HH:mm:ss"))
+  }, 500)
+
+
   return <Paper elevation={1} sx={{ width: "100%", height: "100vh" }}>
     <div ref={mermaidRef} id="mermaid_target"></div>
+    {/* {currentTime} */}
   </Paper>
 }
 

@@ -39,6 +39,9 @@ export const darkTheme = createTheme({
   },
 }, zhCN);
 
-const themes = { primaryTheme, darkTheme };
+const themes = {
+  "primary": primaryTheme,
+  "dark": darkTheme
+};
 
 export default themes;

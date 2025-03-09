@@ -346,11 +346,14 @@ export default function Tasks(props: TasksProps) {
             case undefined:
               return true;
             case "today":
+
               return dayjs(row.ddl).isSame(dayjs(), "day");
             case "all":
               return true;
             case "incomplete":
               return row.status === "on going";
+            case "recent":
+              return dayjs(row.ddl).isBefore(dayjs().add(storageValue.content.settings?.recentDay ?? 2, "day")) && dayjs(row.ddl).isAfter(dayjs().add(-1, "day"), "day");
           }
         })
     ,

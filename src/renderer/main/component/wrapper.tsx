@@ -15,6 +15,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 
 import AddIcon from '@mui/icons-material/Add';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -33,7 +34,11 @@ const drawerWidth = 180;
 const upperList = [
   {
     text: "今日",
-    icon: <WbSunnyIcon />
+    icon: <WbSunnyIcon />,
+  },
+  {
+    text: "近日",
+    icon: <ScheduleIcon />
   },
   {
     text: "总览",

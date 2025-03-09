@@ -35,11 +35,18 @@ export interface GroupedTaskType {
   [key: string]: TaskType[]
 }
 
+export interface SettingConfig {
+  theme: "dark" | "light",
+  recentDay: number,
+  showNotCompleteBefore: boolean,
+}
+
 export interface StorageSchema {
   content: {
     tasks: TaskType[],
     groups: string[],
-    mermaidConfig: OMTFloatWindowConfig
+    mermaidConfig: OMTFloatWindowConfig,
+    settings: SettingConfig,
   }
 }
 
@@ -57,8 +64,13 @@ export const defaultStorage: StorageSchema = {
   content: {
     tasks: [],
     groups: [],
-    mermaidConfig: {}
-  },
+    mermaidConfig: {},
+    settings: {
+      theme: "dark",
+      recentDay: 2,
+      showNotCompleteBefore: false,
+    }
+  }
 }
 
-export type sortType = "all" | "incomplete" | "today"
+export type sortType = "all" | "incomplete" | "today" | "recent"
