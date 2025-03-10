@@ -87,7 +87,7 @@ function getComparator<Key extends keyof any>(
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof Data | "delete";
   label: string;
   numeric: boolean;
 }
@@ -128,6 +128,12 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: '分组',
+  },
+  {
+    id: 'delete',
+    numeric: false,
+    disablePadding: false,
+    label: '删除',
   },
 ];
 
@@ -172,7 +178,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             <TableSortLabel
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
-              onClick={createSortHandler(headCell.id)}
+              // onClick={createSortHandler(headCell.id)}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -241,6 +247,16 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               <DoneAllIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Delete">
+            <IconButton onClick={() => {
+              setStorage(produce((draft: any) => {
+                draft.content.tasks = draft.content.tasks.filter((item: any) => !selected.includes(item.id));
+              }))
+              props.setSelect([]);
+            }}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="OpenInNew">
             <IconButton onClick={() => {
               //@ts-ignore
@@ -287,6 +303,7 @@ export default function Tasks(props: TasksProps) {
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
       const newSelected = storageValue.content.tasks.map((n) => n.id);
+      // const newSelected = visibleRows.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -363,7 +380,7 @@ export default function Tasks(props: TasksProps) {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2 }}>
-        <EnhancedTableToolbar selected={selected} setSelect={setSelected}/>
+        <EnhancedTableToolbar selected={selected} setSelect={setSelected} />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}
@@ -425,6 +442,15 @@ export default function Tasks(props: TasksProps) {
                     </TableCell>
                     <TableCell align="left">
                       <TableGroup task={row} />
+                    </TableCell>
+                    <TableCell align="left">
+                      <IconButton onClick={() => {
+                        setStorage(produce((draft: any) => {
+                          draft.content.tasks = draft.content.tasks.filter((item: any) => item.id !== row.id);
+                        }))
+                      }}>
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 );
