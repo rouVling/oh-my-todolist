@@ -19,6 +19,7 @@ import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -254,7 +255,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
               }))
               props.setSelect([]);
             }}>
-              <DeleteIcon />
+              <DeleteOutlineIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title="OpenInNew">
@@ -449,7 +450,7 @@ export default function Tasks(props: TasksProps) {
                           draft.content.tasks = draft.content.tasks.filter((item: any) => item.id !== row.id);
                         }))
                       }}>
-                        <DeleteIcon fontSize="small" />
+                        <DeleteOutlineIcon fontSize="small" />
                       </IconButton>
                     </TableCell>
                   </TableRow>
