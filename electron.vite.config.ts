@@ -4,7 +4,20 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   main: {
-    plugins: [externalizeDepsPlugin()]
+    plugins: [externalizeDepsPlugin()],
+    // build: {
+    //   rollupOptions: {
+    //     external: ['node:sqlite'], // Add node:sqlite to external dependencies
+    //   }
+    // }
+    build: {
+      rollupOptions: {
+        external: ['sqlite3', 'fastmcp'], // 在这里添加 sqlite3
+        output: {
+          // format: 'es'
+        }
+      },
+    },
   },
   preload: {
     build: {

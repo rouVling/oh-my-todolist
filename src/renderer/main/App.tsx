@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import SettingDrawer from "./component/drawer";
 import Wrapper from "./component/wrapper";
 import Tasks from "./tasks";
@@ -8,7 +8,7 @@ import { darkTheme, primaryTheme } from '../utils/themes';
 
 import { setThemeContext } from "./contexts";
 import { storageContext } from "./contexts";
-import { defaultStorage, sortType, StorageSchema } from "../utils/types";
+import { defaultStorage, sortType, StorageSchema, TaskType } from "../utils/types";
 import { set } from "mermaid/dist/diagrams/state/id-cache.js";
 import TaskEditor from "./component/taskEditor";
 import { taskTypeDump, taskTypePartialDump, taskTypePartialLoad } from "../utils/converts";
@@ -37,6 +37,16 @@ export default function MainApp() {
   const [group, setGroup] = React.useState<string | undefined>(undefined);
   const [sort, setSort] = React.useState<sortType | undefined>(undefined);
   const [storageValue, setStorage] = useState<StorageSchema | undefined>(undefined);
+
+  // 使用 useRef 保存最新的 storageValue 和 setStorage 引用
+  const storageRef = useRef<StorageSchema | undefined>(storageValue);
+  const setStorageRef = useRef(setStorage);
+
+  // 更新 ref 引用
+  useEffect(() => {
+    storageRef.current = storageValue;
+    setStorageRef.current = setStorage;
+  }, [storageValue, setStorage]);
 
 
   const handleClickGroup = (group_index: number) => {
@@ -90,6 +100,120 @@ export default function MainApp() {
   }, [])
 
   useEffect(() => {
+    // 监听来自 main 进程的存储更新
+    //@ts-ignore
+    const handleStorageUpdate = (event, updatedContent) => {
+      console.log('Received storage update from main process:', updatedContent);
+      
+      // 确保数据结构完整
+      const completeContent = {
+        ...updatedContent,
+        mermaidConfig: {
+          mermaidInit: {
+            gantt: {}
+          },
+          ...updatedContent.mermaidConfig
+        },
+        settings: {
+          theme: "dark",
+          recentDay: 2,
+          showNotCompleteBefore: false,
+          ...updatedContent.settings
+        }
+      };
+      
+      setStorage(prev => ({
+        ...prev,
+        content: {
+          ...completeContent,
+          tasks: completeContent.tasks.map(taskTypePartialLoad)
+        }
+      }));
+    };
+
+    //@ts-ignore
+    window.electron.ipcRenderer.on('storage-updated', handleStorageUpdate);
+
+    return () => {
+      //@ts-ignore
+      window.electron.ipcRenderer.removeListener('storage-updated', handleStorageUpdate);
+    };
+  }, [])
+
+  // 独立的 MCP 事件监听器，避免因 storageValue 变化而重复注册
+  useEffect(() => {
+    // 监听来自 MCP 的任务修改事件
+    //@ts-ignore
+    const handleMCPModifyTasks = (event, tasks) => {
+      console.log('Received MCP modify tasks:', tasks);
+      
+      console.log(event)
+      console.log(tasks)
+
+      const currentStorage = storageRef.current;
+      if (!currentStorage) {
+        console.warn("Storage not loaded yet. Ignoring MCP modify tasks.");
+        return;
+      }
+      console.log("Current storage:", currentStorage);
+
+      // 使用 ref 中的 setStorage 函数来更新存储
+      setStorageRef.current(produce(currentStorage, (draft: StorageSchema) => {
+        const currentTasks = draft.content.tasks || [];
+        const currentGroups = draft.content.groups || [];
+        
+        tasks.forEach((task: any) => {
+          if (task.id) {
+            // 修改现有任务
+            const existingTaskIndex = currentTasks.findIndex(t => t.id === task.id);
+            if (existingTaskIndex !== -1) {
+              currentTasks[existingTaskIndex] = {
+                ...currentTasks[existingTaskIndex],
+                content: task.content,
+                status: task.status,
+                duration: task.duration ? dayjs.duration(task.duration) : undefined,
+                start: task.start ? dayjs(task.start) : undefined,
+                ddl: task.ddl ? dayjs(task.ddl) : undefined,
+                group: task.group,
+              };
+            }
+          } else {
+            // 新增任务
+            const newId = Math.max(...currentTasks.map(t => t.id || 0), 0) + 1;
+            const newTask: TaskType = {
+              id: newId,
+              content: task.content,
+              status: task.status,
+              duration: task.duration ? dayjs.duration(task.duration) : undefined,
+              start: task.start ? dayjs(task.start) : undefined,
+              ddl: task.ddl ? dayjs(task.ddl) : undefined,
+              group: task.group,
+              alerts: []
+            };
+            currentTasks.push(newTask);
+
+            // 如果有新的分组，添加到分组列表
+            if (task.group && !currentGroups.includes(task.group)) {
+              currentGroups.push(task.group);
+            }
+          }
+        });
+        
+        draft.content.tasks = currentTasks;
+        draft.content.groups = currentGroups;
+      }));
+    };
+
+    //@ts-ignore
+    window.electron.ipcRenderer.on('mcp-modify-tasks', handleMCPModifyTasks);
+
+    return () => {
+      //@ts-ignore
+      window.electron.ipcRenderer.removeListener('mcp-modify-tasks', handleMCPModifyTasks);
+    };
+  }, [])
+
+  useEffect(() => {
     // console.log("storageValue changed")
     // console.log(storageValue)
     if (storageValue) {
@@ -126,4 +250,4 @@ export default function MainApp() {
       </ThemeProvider>
     </setThemeContext.Provider>
   </storageContext.Provider>
-}
+} 

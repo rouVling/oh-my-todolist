@@ -64,7 +64,11 @@ export const defaultStorage: StorageSchema = {
   content: {
     tasks: [],
     groups: [],
-    mermaidConfig: {},
+    mermaidConfig: {
+      mermaidInit: {
+        gantt: {}
+      }
+    },
     settings: {
       theme: "dark",
       recentDay: 2,
